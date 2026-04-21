@@ -1,0 +1,191 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Harmonic Reality Warper — MyAiPlug</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="plugin-faceplate">
+        <!-- Decoration Screws -->
+        <div class="screw tl"></div>
+        <div class="screw tr"></div>
+        <div class="screw bl"></div>
+        <div class="screw br"></div>
+
+        <!-- Theme Toggle Switch -->
+        <div class="theme-toggle" onclick="document.body.classList.toggle('light-mode')" title="Toggle Light/Dark Mode"></div>
+
+        <!-- Branding Header -->
+        <div class="brand-header">
+            <div class="brand-badge">
+                <div class="brand-icon">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M16,6H15V4A2,2 0 0,0 13,2H11A2,2 0 0,0 9,4V6H8A2,2 0 0,0 6,8V14C6,15.1 6.9,16 8,16H9V18A2,2 0 0,0 11,20H13A2,2 0 0,0 15,18V16H16A2,2 0 0,0 18,14V8A2,2 0 0,0 16,6M11,4H13V6H11V4M13,22H11V20H13V22Z"></path>
+                    </svg>
+                </div>
+                <div class="brand-info">
+                    <h1>MyAiPlug</h1>
+                    <span>HARMONIC REALITY WARPER</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Header / Display -->
+        <div class="lcd-panel">
+            <div style="display: flex; gap: 10px;">
+                <button class="btn-metallic" onclick="document.getElementById('audioFile').click()">Load Audio</button>
+                <input type="file" id="audioFile" accept="audio/*">
+                <button class="btn-metallic" id="playBtn" onclick="togglePlay()">Engage</button>
+                <button class="btn-metallic" id="downloadBtn" onclick="downloadProcessedAudio()" disabled>Export WAV</button>
+            </div>
+            <div class="status-display" id="statusText">DEMO MODE - UPLOAD AUDIO TO ENABLE DOWNLOAD</div>
+        </div>
+
+        <!-- Hidden Audio -->
+        <audio id="audioElement" loop crossorigin="anonymous"></audio>
+
+        <!-- Spectrum Analyzer -->
+        <div class="spectrum-frame">
+            <div class="spectrum-glass" id="spectrum">
+                <!-- JS Bars go here -->
+            </div>
+        </div>
+
+        <!-- Toggles Modules -->
+        <div class="modules-row">
+            <!-- Low -->
+            <div class="module-group" id="group-low">
+                <div class="engraved-label">Low End</div>
+                <div class="metal-switch" onclick="togglePill(this, 'low')">
+                    <div class="switch-opt" data-opt="thick">Thick</div>
+                    <div class="switch-opt active" data-opt="punch">Punch</div>
+                </div>
+                <div class="sm-ctrls">
+                    <div class="led-btn solo" onclick="toggleSolo('low')">S</div>
+                    <div class="led-btn mute" onclick="toggleMute('low')">M</div>
+                </div>
+            </div>
+
+            <!-- Mid -->
+            <div class="module-group" id="group-mid">
+                <div class="engraved-label">Mid Range</div>
+                <div class="metal-switch" onclick="togglePill(this, 'mid')">
+                    <div class="switch-opt active" data-opt="gentle">Soft</div>
+                    <div class="switch-opt" data-opt="warm">Warm</div>
+                </div>
+                <div class="sm-ctrls">
+                    <div class="led-btn solo" onclick="toggleSolo('mid')">S</div>
+                    <div class="led-btn mute" onclick="toggleMute('mid')">M</div>
+                </div>
+            </div>
+
+            <!-- Hi-Mid -->
+            <div class="module-group" id="group-himid">
+                <div class="engraved-label">Presence</div>
+                <div class="metal-switch" onclick="togglePill(this, 'himid')">
+                    <div class="switch-opt active" data-opt="flipped">Focus</div>
+                    <div class="switch-opt" data-opt="direct">Wide</div>
+                </div>
+                <div class="sm-ctrls">
+                    <div class="led-btn solo" onclick="toggleSolo('himid')">S</div>
+                    <div class="led-btn mute" onclick="toggleMute('himid')">M</div>
+                </div>
+            </div>
+
+            <!-- High -->
+            <div class="module-group" id="group-high">
+                <div class="engraved-label">Air Band</div>
+                <div class="metal-switch" onclick="togglePill(this, 'high')">
+                    <div class="switch-opt active" data-opt="excite">Shine</div>
+                    <div class="switch-opt" data-opt="smooth">Silk</div>
+                </div>
+                <div class="sm-ctrls">
+                    <div class="led-btn solo" onclick="toggleSolo('high')">S</div>
+                    <div class="led-btn mute" onclick="toggleMute('high')">M</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Section -->
+        <div class="main-section">
+            <!-- Left Meter / Slider Look -->
+            <div class="meter-housing">
+                <div class="meter-track">
+                    <div class="meter-val" id="meter-in"></div>
+                </div>
+                <div class="engraved-label" style="margin-top:5px">INPUT</div>
+            </div>
+
+            <!-- Big Knob -->
+            <div class="knob-surround">
+                <div class="main-knob-body" id="mainKnob">
+                    <div class="knob-cap">
+                        <div class="indicator-line"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Meter / Slider Look -->
+            <div class="meter-housing">
+                <div class="meter-track">
+                    <div class="meter-val" id="meter-out"></div>
+                </div>
+                <div class="engraved-label" style="margin-top:5px">OUTPUT</div>
+            </div>
+        </div>
+
+        <!-- Bottom Controls -->
+        <div class="bottom-rack">
+            <div class="ctrl-group">
+                <div class="engraved-label">BYPASS</div>
+                <div class="toggle-switch-v" id="bypassSwitch" onclick="toggleBypass()">
+                    <div class="toggle-lever"></div>
+                </div>
+            </div>
+
+            <div class="ctrl-group">
+                <div class="mini-knob" id="knob-lowpass" data-val="75">
+                    <div class="mini-knob-line"></div>
+                    <div class="mini-val-display">75</div>
+                </div>
+                <div class="engraved-label">HPF</div>
+            </div>
+
+            <div class="ctrl-group">
+                <div class="mini-knob" id="knob-highpass" data-val="19">
+                    <div class="mini-knob-line"></div>
+                    <div class="mini-val-display">19k</div>
+                </div>
+                <div class="engraved-label">LPF</div>
+            </div>
+
+            <div class="ctrl-group">
+                <div class="mini-knob" id="knob-sat" data-val="33">
+                    <div class="mini-knob-line" style="background:var(--accent-cyan); box-shadow:0 0 5px var(--accent-cyan);"></div>
+                    <div class="mini-val-display" style="color:var(--accent-cyan)">33</div>
+                </div>
+                <div class="engraved-label">DRIVE</div>
+            </div>
+            
+            <div class="ctrl-group">
+                <div class="mode-select">
+                    <div class="mode-btn" onclick="setSatType('tape', this)">TAPE</div>
+                    <div class="mode-btn active" onclick="setSatType('tube', this)">TUBE</div>
+                    <div class="mode-btn" onclick="setSatType('transfo', this)">XFMR</div>
+                </div>
+                <div class="engraved-label" style="margin-top:5px">MODEL</div>
+            </div>
+        </div>
+
+    </div>
+
+    
+
+<script src="script.js" defer></script>
+</body>
+</html>
+<script async data-explicit-opt-in="true" data-deployment-id="dpl_EeZPZGZukei3r9iLnxBpyQj4NTA3" src="https://vercel.live/_next-live/feedback/feedback.js"></script>
